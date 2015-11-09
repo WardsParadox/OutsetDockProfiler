@@ -25,7 +25,9 @@ workingPath = tempfile.mkdtemp()
 # Copy the profile into the temporary path
 os.makedirs(os.path.join(workingPath, 'Outset-Dock-%s' % arguments.name, libraryPath))
 shutil.copy(arguments.profile, os.path.join(workingPath, 'Outset-Dock-%s' % arguments.name, libraryPath))
-
+# Ensure Read Permissions of Profile
+profilePath='{0}/{1}'.format(os.path.join(workingPath, 'Outset-Dock-%s' % arguments.name, libraryPath), os.listdir(os.path.join(workingPath, 'Outset-Dock-%s' % arguments.name, libraryPath))[0])
+os.chmod('%s' % profilePath, 0755)
 # Place the script into the outset folder in the temporary path
 os.makedirs(os.path.join(workingPath, 'Outset-Dock-%s' % arguments.name, outsetPath))
 # This is the base profile installer script
