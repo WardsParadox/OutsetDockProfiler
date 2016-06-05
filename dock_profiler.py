@@ -1,4 +1,8 @@
 #!/usr/bin/python
+'''
+Creates an installer package for Outset that loads a profile at login
+for a specific user
+'''
 
 import argparse
 import os
@@ -7,7 +11,7 @@ import tempfile
 import subprocess
 
 p = argparse.ArgumentParser(description="Creates a package for Outset that will install a profile for a specific user on login.")
-p.add_argument("-p","--profile", help='path to profile to load. Required', required=True)
+p.add_argument("-p","--profile", help='path to profile to load. Required, can use multiple times!', action='append', required=True)
 p.add_argument("-n","--name", help='name of user to trigger on login. Required', required=True)
 p.add_argument("-i","--identifier", help='identifier of package, defaults to "com.organization.profile"', default='com.organization.profile')
 p.add_argument("-o","--output", help='path to output package, defaults to "Outset-Profile.pkg"', default='Outset-Profile.pkg')
@@ -23,19 +27,25 @@ if (arguments.once):
 
 workingPath = tempfile.mkdtemp()
 # Copy the profile into the temporary path
-os.makedirs(os.path.join(workingPath, 'Outset-Dock-%s' % arguments.name, libraryPath))
-shutil.copy(arguments.profile, os.path.join(workingPath, 'Outset-Dock-%s' % arguments.name, libraryPath))
+os.makedirs(os.path.join(workingPath, 'Outset-Dock-%s' % arguments.name, libraryPath, arguments.name))
+print arguments.profile
+for files in arguments.profile:
+    shutil.copy(files, os.path.join(workingPath, 'Outset-Dock-%s' % arguments.name, libraryPath, arguments.name))
+
 # Ensure Read Permissions of Profile
-profilePath='{0}/{1}'.format(os.path.join(workingPath, 'Outset-Dock-%s' % arguments.name, libraryPath), os.listdir(os.path.join(workingPath, 'Outset-Dock-%s' % arguments.name, libraryPath))[0])
+profilePath='{0}/{1}'.format(os.path.join(workingPath, 'Outset-Dock-%s' % arguments.name, libraryPath, arguments.name), os.listdir(os.path.join(workingPath, 'Outset-Dock-%s' % arguments.name, libraryPath, arguments.name))[0])
 os.chmod('%s' % profilePath, 0755)
 # Place the script into the outset folder in the temporary path
 os.makedirs(os.path.join(workingPath, 'Outset-Dock-%s' % arguments.name, outsetPath))
 # This is the base profile installer script
 script='''#!/bin/sh
 if [[ $USER == "%s" ]]; then
-    /usr/bin/profiles -IvF "/Library/Profiles/%s"
+    for p in "$(ls -1 /Library/Profiles/)";
+    do
+        /usr/bin/profiles -IvF "/Library/Profiles/$p"
+    done
 fi
-''' % (arguments.name, os.path.basename(arguments.profile))
+''' % (arguments.name)
 # write script to file in temp directory
 with open(os.path.join(workingPath, 'Outset-Dock-%s' % arguments.name, outsetPath, 'profile-%s.sh' % arguments.name), 'wb') as outsetScript:
     outsetScript.write(script)
