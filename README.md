@@ -12,7 +12,7 @@ Although any user-level profile will do, my primary usage for this is Dock profi
 
 ```
 $ ./dock_profiler.py -h
-usage: dock_profiler.py [-h] -p PROFILE -n NAME [-i IDENTIFIER] [-o OUTPUT]
+usage: dock_profiler.py [-h] -p PROFILE [-p PROFILE2 ...] -n NAME [-i IDENTIFIER] [-o OUTPUT]
                         [--once] [-s IDENTITY] [-v VERSION]
 
 Creates a package for Outset that will install a profile for a specific user
@@ -21,7 +21,7 @@ on login.
 optional arguments:
   -h, --help            show this help message and exit
   -p PROFILE, --profile PROFILE
-                        path to profile to load. Required
+                        path to profile to load. Required, can be used multiple times
   -n NAME, --name NAME  name of user to trigger on login. Required
   -i IDENTIFIER, --identifier IDENTIFIER
                         identifier of package, defaults to
@@ -36,7 +36,7 @@ optional arguments:
                         version for package, defaults to 1.0
 ```
 
-The required arguments are `--profile` (path to a profile) and `--name` (the name of the user to trigger the profile installation).
+The required arguments are `--profile` (path to a profile(s)) and `--name` (the name of the user to trigger the profile installation).
 
 `--identifier` can be specified to create an identifier for the package (and the package receipt).  
 
