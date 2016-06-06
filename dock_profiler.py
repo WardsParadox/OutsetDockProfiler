@@ -28,7 +28,6 @@ if (arguments.once):
 workingPath = tempfile.mkdtemp()
 # Copy the profile into the temporary path
 os.makedirs(os.path.join(workingPath, 'Outset-Dock-%s' % arguments.name, libraryPath, arguments.name))
-print arguments.profile
 for files in arguments.profile:
     shutil.copy(files, os.path.join(workingPath, 'Outset-Dock-%s' % arguments.name, libraryPath, arguments.name))
 
@@ -38,14 +37,14 @@ os.chmod('%s' % profilePath, 0755)
 # Place the script into the outset folder in the temporary path
 os.makedirs(os.path.join(workingPath, 'Outset-Dock-%s' % arguments.name, outsetPath))
 # This is the base profile installer script
-script='''#!/bin/sh
-if [[ $USER == "%s" ]]; then
-    for p in "$(ls -1 /Library/Profiles/)";
+script='''#!/bin/bash
+if [[ $USER == "{0}" ]]; then
+    for p in /Library/Profiles/{0}/*;
     do
-        /usr/bin/profiles -IvF "/Library/Profiles/$p"
+        /usr/bin/profiles -IvF "/Library/Profiles/{0}/$p"
     done
 fi
-''' % (arguments.name)
+'''.format(arguments.name)
 # write script to file in temp directory
 with open(os.path.join(workingPath, 'Outset-Dock-%s' % arguments.name, outsetPath, 'profile-%s.sh' % arguments.name), 'wb') as outsetScript:
     outsetScript.write(script)
